@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Votre panier{% endblock %}
+
+{% block body %}
+    <h1 class="text-center">Liste des produits dans votre panier</h1>
+
+    {% if contenusPanier is empty %}
+        <div class="alert alert-warning">Votre panier est vide</div>
+    {% else %}
+        <div class="row row-cols">
+            {% set prixTotal = 0 %}
+            {% for contenuPanier in contenusPanier %}
+                {% set prixTotal = prixTotal + contenuPanier.produit.prix * contenuPanier.quantite %}
+
+                <div class="col">
+                    <div class="rounded-3 border mx-5 my-5">
+                        <div class="d-flex">
+                            {% if contenuPanier.produit.photo %}
+                                <img src="../{{ asset('images/' ~ produit.photo) }}" class="card-img-fluid"
+                                     alt="image de produit">
+                            {% else %}
+                                <img src="https://via.placeholder.com/150" class="card-img-fluid" alt="...">
+                            {% endif %}
+                            <div class="d-flex flex-column bd-highlight mb-3 mx-5">
+                                <h1>{{ contenuPanier.produit.nom }}</h1>
+                                <h5>Ajouté au panier le {{ contenuPanier.date | date('d-m-Y') }}</h5>
+                                <h5>Quantité: {{ contenuPanier.quantite }}</h5>
+
+                                {% if contenuPanier.quantite > 1 %}
+                                    <h5>Prix à l'unité: {{ contenuPanier.produit.prix }}€</h5>
+                                    <h5>Prix pour {{ contenuPanier.quantite }}
+                                        : {{ contenuPanier.produit.prix * contenuPanier.quantite }}€</h5>
+                                {% else %}
+                                    <h5>Prix: {{ contenuPanier.produit.prix }}€</h5>
+                                {% endif %}
+                                <a href="{{ path('app_contenu_panier_delete', {'id': contenuPanier.id}) }}"
+                                   type="button" class="btn btn-danger" style="width: 80%">Supprimer le produit</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            {% endfor %}
+        </div>
+        <div style="width: fit-content" class="border rounded-3 mx-5 p-2 d-flex  flex-column bd-highlight">Prix total du
+            panier: {{ prixTotal | number_format(2) }}€
+            <a href="app_panier_achat" type="button" class="btn btn-success">Payer</a>
+        </div>
+
+    {% endif %}
+{% endblock %}

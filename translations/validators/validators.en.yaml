@@ -1,0 +1,6 @@
+produit:
+  nom.utilise: 'Name already used'
+
+utilisateur:
+  email.utilise: 'Email already used'
+  erreur.mot_de_passe: 'Password must be at least 8 characters long and contain at least one digit, one uppercase letter and one lowercase letter'

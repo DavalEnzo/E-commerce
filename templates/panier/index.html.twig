@@ -1,14 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Votre panier{% endblock %}
+{% block title %}{{ 'panier.votrePanier' | trans }}{% endblock %}
 
 {% block body %}
-    <h1 class="text-center">Liste des produits dans votre panier</h1>
+    <h1 class="text-center">{{ 'panier.listePanier' | trans }}</h1>
 
     {% if contenusPanier is empty %}
-        <div class="alert alert-warning">Votre panier est vide</div>
+        <div class="alert alert-warning">{{ 'panier.panierVide' | trans }}</div>
     {% else %}
-        <div class="row row-cols">
+        <div class="row row-cols-1">
+            {% if panier.etat != 0 %}
+                <div class="alert alert-warning">{{ 'panier.dateCommande' | trans }} {{ panier.date | date('d-m-Y') }}</div>
+            {% endif %}
             {% set prixTotal = 0 %}
             {% for contenuPanier in contenusPanier %}
                 {% set prixTotal = prixTotal + contenuPanier.produit.prix * contenuPanier.quantite %}
@@ -17,25 +20,27 @@
                     <div class="rounded-3 border mx-5 my-5">
                         <div class="d-flex">
                             {% if contenuPanier.produit.photo %}
-                                <img src="../{{ asset('images/' ~ produit.photo) }}" class="card-img-fluid"
+                                <img src="../{{ asset('images/' ~ contenuPanier.produit.photo) }}" class="card-img-fluid"
                                      alt="image de produit">
                             {% else %}
                                 <img src="https://via.placeholder.com/150" class="card-img-fluid" alt="...">
                             {% endif %}
                             <div class="d-flex flex-column bd-highlight mb-3 mx-5">
                                 <h1>{{ contenuPanier.produit.nom }}</h1>
-                                <h5>Ajouté au panier le {{ contenuPanier.date | date('d-m-Y') }}</h5>
-                                <h5>Quantité: {{ contenuPanier.quantite }}</h5>
+                                <h5>{{ 'panier.dateAjoutee' | trans }} {{ contenuPanier.date | date('d-m-Y') }}</h5>
+                                <h5>{{ 'panier.quantite' | trans }}: {{ contenuPanier.quantite }}</h5>
 
                                 {% if contenuPanier.quantite > 1 %}
-                                    <h5>Prix à l'unité: {{ contenuPanier.produit.prix }}€</h5>
-                                    <h5>Prix pour {{ contenuPanier.quantite }}
+                                    <h5>{{ 'panier.prixUnite' | trans }}: {{ contenuPanier.produit.prix }}€</h5>
+                                    <h5>{{ 'panier.prixPour' | trans }} {{ contenuPanier.quantite }}
                                         : {{ contenuPanier.produit.prix * contenuPanier.quantite }}€</h5>
                                 {% else %}
-                                    <h5>Prix: {{ contenuPanier.produit.prix }}€</h5>
+                                    <h5>{{ 'produit.prix' | trans }}: {{ contenuPanier.produit.prix }}€</h5>
                                 {% endif %}
+                                {% if panier.etat != 1 %}
                                 <a href="{{ path('app_contenu_panier_delete', {'id': contenuPanier.id}) }}"
-                                   type="button" class="btn btn-danger" style="width: 80%">Supprimer le produit</a>
+                                   type="button" class="btn btn-danger" style="width: 80%">{{ 'panier.supprimerProduit' | trans }}</a>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -43,9 +48,11 @@
 
             {% endfor %}
         </div>
-        <div style="width: fit-content" class="border rounded-3 mx-5 p-2 d-flex  flex-column bd-highlight">Prix total du
-            panier: {{ prixTotal | number_format(2) }}€
-            <a href="app_panier_achat" type="button" class="btn btn-success">Payer</a>
+        <div style="width: fit-content" class="border rounded-3 mx-5 p-2 d-flex  flex-column bd-highlight">{{ 'panier.prixTotalPanier' | trans }}: {{ prixTotal | number_format(2) }}€
+            {% if panier.etat != 1 %}
+                <a href="{{ path('app_panier_achat', {'id': panier.id}) }}" type="button"
+                   class="btn btn-success">{{ 'panier.payer' | trans }}</a>
+            {% endif %}
         </div>
 
     {% endif %}

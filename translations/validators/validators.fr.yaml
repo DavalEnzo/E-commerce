@@ -1,0 +1,7 @@
+produit:
+  nom.utilise: 'Nom déjà utilisé'
+
+
+utilisateur:
+  email.utilise: 'Email déjà utilisé'
+  erreur.mot_de_passe: 'Le mot de passe doit comporter au moins 8 caractères et contenir au moins un chiffre, une lettre majuscule et une lettre minuscule'

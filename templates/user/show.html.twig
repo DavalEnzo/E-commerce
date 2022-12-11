@@ -1,42 +1,36 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}User{% endblock %}
+{% block title %}{{ app.user.nom ~ ' ' ~ app.user.prenom }}{% endblock %}
 
 {% block body %}
-    <h1>User</h1>
+    <h1 class="text-center my-2">{{ 'compte.monCompte' | trans }}</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ user.id }}</td>
-            </tr>
-            <tr>
-                <th>Email</th>
-                <td>{{ user.email }}</td>
-            </tr>
-            <tr>
-                <th>Roles</th>
-                <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
-            </tr>
-            <tr>
-                <th>Password</th>
-                <td>{{ user.password }}</td>
-            </tr>
-            <tr>
-                <th>Prenom</th>
-                <td>{{ user.prenom }}</td>
-            </tr>
-            <tr>
-                <th>Nom</th>
-                <td>{{ user.nom }}</td>
-            </tr>
-        </tbody>
-    </table>
+    {{ form(form) }}
 
-    <a href="{{ path('app_user_index') }}">back to list</a>
+    <h3 class="text-center my-5">{{ 'compte.historiqueCommande' | trans }}</h3>
 
-    <a href="{{ path('app_user_edit', {'id': user.id}) }}">edit</a>
-
-    {{ include('user/_delete_form.html.twig') }}
+    {% if paniers is empty %}
+        <div class="alert alert-warning">Aucune commande n'a été enregistrée</div>
+    {% else %}
+        <div class="row row-cols justify-content-md-center">
+            {% set prixTotal = 0 %}
+            {% for panier in paniers %}
+                <div class="col-6">
+                    <div class="rounded-3 border mx-5 my-5">
+                        <div class="d-flex">
+                            <div class="d-flex flex-column bd-highlight mb-3 mx-auto">
+                                <h1>{{ 'compte.commande' | trans }} n°{{ panier.id }}</h1>
+                                <h5>{{ 'compte.dateCommande' | trans }} {{ panier.date | date('d-m-Y') }}</h5>
+                                {% for contenuPanier in panier.contenuPaniers %}
+                                    {% set prixTotal = prixTotal + (contenuPanier.produit.prix * contenuPanier.quantite) %}
+                                {% endfor %}
+                                <h5>{{ 'produit.prix' | trans }}: {{ prixTotal | number_format(2) }}€</h5>
+                                <a href="{{ path('app_panier_show', {'id': panier.id}) }}" class="btn btn-primary mx-auto">{{ 'compte.voirCommande' | trans }}</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 {% endblock %}

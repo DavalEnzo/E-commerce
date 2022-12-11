@@ -1,0 +1,91 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'panelAdmin.administration' | trans }}{% endblock %}
+
+{% block body %}
+
+    <h1 class="text-center my-4">{{ 'panelAdmin.panelAdmin' | trans }} <img class="mx-2" style="width: 5%"
+                                                           src="https://www.icone-png.com/png/35/34840.png"/></h1>
+
+    <h3 class="text-center my-5">{{ 'panelAdmin.listePanier' | trans }}</h3>
+
+    {% if paniers is empty %}
+        <div class="alert alert-warning">{{ 'panelAdmin.aucuneCommande' | trans }}</div>
+    {% else %}
+        <div class="row row-cols justify-content-md-center">
+            {% set prixTotal = 0 %}
+            {% for panier in paniers %}
+                <div class="col-7">
+                    <div class="rounded-3 border mx-5">
+                        <div class="d-flex">
+                            <div class="d-flex flex-column mb-3 mx-auto">
+                                <h1>{{ 'panelAdmin.panierProprietaire' | trans }} {{ panier.utilisateur.nom ~ ' ' ~ panier.utilisateur.prenom }}</h1>
+                                <h3>{{ 'compte.commande' | trans }} n°{{ panier.id }}</h3>
+                                <h5>{{ 'compte.dateCommande' | trans }} {{ panier.date | date('d-m-Y') }}</h5>
+                                {% for contenuPanier in panier.contenuPaniers %}
+                                    {% set prixTotal = prixTotal + (contenuPanier.produit.prix * contenuPanier.quantite) %}
+
+                                    <div class="col">
+                                        <div class="rounded-3 border mx-5 my-3">
+                                            <div class="d-flex">
+                                                {% if contenuPanier.produit.photo %}
+                                                    <img src="../{{ asset('images/' ~ produit.photo) }}"
+                                                         class="card-img-fluid"
+                                                         alt="image de produit">
+                                                {% else %}
+                                                    <img src="https://via.placeholder.com/150" class="card-img-fluid"
+                                                         alt="...">
+                                                {% endif %}
+                                                <div class="d-flex flex-column bd-highlight mb-3 mx-5">
+                                                    <h1>{{ contenuPanier.produit.nom }}</h1>
+                                                    <h5>{{ 'produit.ajouterAuPanier' | trans }}
+                                                        le {{ contenuPanier.date | date('d-m-Y') }}</h5>
+                                                    <h5>{{ 'panier.quantite' | trans }}: {{ contenuPanier.quantite }}</h5>
+
+                                                    {% if contenuPanier.quantite > 1 %}
+                                                        <h5>{{ 'panier.prixUnite' | trans }}: {{ contenuPanier.produit.prix }}€</h5>
+                                                        <h5>{{ 'panier.prixPour' | trans }} {{ contenuPanier.quantite }}
+                                                            : {{ contenuPanier.produit.prix * contenuPanier.quantite }}
+                                                            €</h5>
+                                                    {% else %}
+                                                        <h5>{{ 'produit.prix' | trans }}: {{ contenuPanier.produit.prix }}€</h5>
+                                                    {% endif %}
+                                                    {% if panier.etat != 1 %}
+                                                        <a href="{{ path('app_contenu_panier_delete', {'id': contenuPanier.id}) }}"
+                                                           type="button" class="btn btn-danger" style="width: 80%">{{ 'panier.supprimerProduit' | trans }}</a>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% set prixTotal = prixTotal + contenuPanier.produit.prix * contenuPanier.quantite %}
+                                {% endfor %}
+                                <h5>Prix: {{ prixTotal | number_format(2) }}€</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <h3 class="text-center my-5">{{ 'panelAdmin.listeUtilisateurs' | trans }}</h3>
+
+    {% for user in users %}
+        <div class="row row-cols justify-content-md-center">
+            <div class="col-6">
+                <div class="rounded-3 border mx-5 my-2">
+                    <div class="d-flex">
+                        <div class="d-flex flex-column mb-3 mx-auto">
+                            <h2 class="text-center">{{ user.nom ~ ' ' ~ user.prenom }}</h2>
+                            <h3>{{ 'panelAdmin.adresseMail' | trans }}: {{ user.email }}</h3>
+                            <h4>{{ 'panelAdmin.roles' | trans }} : {{ user.roles | join(', ') }}</h4>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+{% endblock %}

@@ -1,11 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Produit{% endblock %}
+{% block title %}{{ 'produit.produit' | trans }}{% endblock %}
 
 {% block body %}
-    <h1 class="text-center">Produits</h1>
+    <h1 class="text-center">{{ 'produit.plural' | trans }}</h1>
     {% if produits is empty %}
-        <div class="alert alert-danger mt-5">Pas de produit pour le moment</div>
+        <div class="alert alert-danger mt-5">{{ 'produit.pasDeProduit' | trans }}</div>
     {% else %}
         <div class="row justify-content-md-center">
             {% for produit in produits %}
@@ -18,7 +18,7 @@
                         {% endif %}
                         <div class="card-body p-2">
                             <h1 class="card-title text-center">{{ produit.nom }}</h1>
-                            <a href="{{ path('app_produit_show', {'id': produit.id}) }}" class="btn btn-primary mx-auto d-block w-25 mt-3">Voir +</a>
+                            <a href="{{ path('app_produit_show', {'id': produit.id}) }}" class="btn btn-primary mx-auto d-block w-25 mt-3">{{ 'produit.voirPlus' | trans }}</a>
                         </div>
                     </div>
                 </div>
@@ -28,7 +28,7 @@
 
     {% if is_granted('ROLE_ADMIN') %}
     <div class="text-center mt-5">
-        <a href="{{ path('app_produit_new') }}" class="btn btn-success">Ajouter un produit</a>
+        <a href="{{ path('app_produit_new') }}" class="btn btn-success">{{ 'produit.ajouterProduit' | trans }}</a>
     </div>
     {% endif %}
 {% endblock %}

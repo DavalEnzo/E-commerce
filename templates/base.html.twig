@@ -28,7 +28,7 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_produit_index') }}">Produits</a>
+                        <a class="nav-link" href="{{ path('app_produit_index') }}">{{ 'produit.plural' | trans }}</a>
                     </li>
                 </ul>
             </div>
@@ -40,10 +40,17 @@
                         {% endif %}
                     {% endfor %}
                {% endif %}
-                <a href="{{ path('app_logout') }}" type="button" class="btn btn-danger">Déconnexion</a>
+                <div style="margin: -5px;" class="d-flex mx-3 align-items-center flex-column">
+                <a style="width: 62%; margin: -5px" href="{{ path('app_user_show',{'id': app.user.id}) }}"><img src="https://img.icons8.com/color/48/null/user--v1.png"/></a>
+                <p> {{ app.user.nom  }} {{ app.user.prenom }}</p>
+                </div>
+                {% if is_granted('ROLE_SUPER_ADMIN') %}
+                    <a class="mx-2" style="width: 2%" href="{{ path('app_user_backoffice') }}"><img style="max-width: 100%" src="https://www.icone-png.com/png/35/34840.png"/></a>
+                {% endif %}
+                <a href="{{ path('app_logout') }}" type="button" class="btn btn-danger">{{ 'utilisateur.deconnexion' | trans }}</a>
             {% else %}
-                <a href="{{ path('app_login') }}" type="button" class="btn btn-primary mx-2">Se connecter</a>
-                <a href="{{ path('app_register') }}" type="button" class="btn btn-success">S'inscrire</a>
+                <a href="{{ path('app_login') }}" type="button" class="btn btn-primary mx-2">{{ 'utilisateur.connexion' | trans }}</a>
+                <a href="{{ path('app_register') }}" type="button" class="btn btn-success">{{ 'utilisateur.inscription' | trans }}</a>
             {% endif %}
         </div>
     </nav>

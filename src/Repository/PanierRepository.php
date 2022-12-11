@@ -44,6 +44,8 @@ class PanierRepository extends ServiceEntityRepository
      * @return Panier[] Returns an array of Panier objects
      * @throws NonUniqueResultException
      */
+
+    // Chercher un panier pas encore payé pour un utilisateur donné
     public function findPanierNotPaid($etat, $utilisateur)
     {
         return $this->createQueryBuilder('p')

@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('{_locale}')]
 class PanierController extends AbstractController
@@ -18,13 +19,27 @@ class PanierController extends AbstractController
      * @throws NonUniqueResultException
      */
     #[Route('/panier', name: 'app_panier_index', methods: ['GET'])]
-    public function index(PanierRepository $panierRepository): Response
+    public function index(PanierRepository $panierRepository, TranslatorInterface $translator): Response
     {
 
         $panier = $panierRepository->findPanierNotPaid(0, $this->getUser());
 
         if ($panier == null) {
-            $this->addFlash('danger', 'Un panier doit être créé avant de pouvoir ajouter un produit');
+            $this->addFlash('danger', $translator->trans('panier.panierDoitCree'));
+            return $this->redirectToRoute('app_produit_index');
+        }
+
+        return $this->render('panier/index.html.twig', [
+            'panier' => $panier,
+            'contenusPanier' => $panier->getContenuPaniers()->getValues(),
+        ]);
+    }
+
+    #[Route('/panier/show/{id}', name: 'app_panier_show', methods: ['GET'])]
+    public function show(Panier $panier = null, TranslatorInterface $translator): Response
+    {
+        if ($panier == null) {
+            $this->addFlash('danger', $translator->trans('panier.panierInexistant'));
             return $this->redirectToRoute('app_produit_index');
         }
 
@@ -46,7 +61,7 @@ class PanierController extends AbstractController
             $panierRepository->save($panier, true);
         }
 
-        return $this->redirectToRoute('app_contenu_panier_new', ['idPanier' => $panierNonPaye->getId(), 'idProduit' => $request->attributes->get('idProduit')], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_contenu_panier_new', ['idPanier' => $panierRepository->findPanierNotPaid(0, $this->getUser())->getId(), 'idProduit' => $request->attributes->get('idProduit')], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/panier/modifier/{id}', name: 'app_panier_edit', methods: ['GET', 'POST'])]
@@ -68,20 +83,42 @@ class PanierController extends AbstractController
     }
 
     #[Route('/panier/{id}', name: 'app_panier_delete')]
-    public function delete(Request $request, Panier $panier = null, PanierRepository $panierRepository): Response
+    public function delete(Request $request, Panier $panier = null, PanierRepository $panierRepository, TranslatorInterface $translator): Response
     {
         if ($panier == null) {
-            $this->addFlash('danger', 'Le panier est introuvable');
+            $this->addFlash('danger', $translator->trans('panier.panierInexistant'));
             return $this->redirectToRoute('app_produit_index');
         }
 
-        $this->addFlash('success', 'Le panier a bien été supprimé');
+        $panierRepository->remove($panier, true);
+
+        $this->addFlash('success', $translator->trans('panier.panierSupprime'));
         return $this->redirectToRoute('app_produit_index', [], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/panier/achat/{id}', name: 'app_panier_achat')]
-    public function achat(Request $request, Panier $panier = null)
+    public function achat(PanierRepository $panierRepository, TranslatorInterface $translator)
     {
 
+        $panierNonPaye = $panierRepository->findPanierNotPaid(0, $this->getUser());
+
+        // Si le panier n'existe pas, on redirige vers la page d'accueil
+        if ($panierNonPaye == null) {
+            $this->addFlash('danger', $translator->trans('panier.panierInexistant'));
+            return $this->redirectToRoute('app_produit_index');
+        }
+
+        // Verification si l'utilisateur est le propriétaire du panier
+        if($this->getUser() != $panierNonPaye->getUtilisateur()){
+            $this->addFlash('danger', $translator->trans('panier.panierNonAppartient'));
+            return $this->redirectToRoute('app_produit_index');
+        }
+
+        $panierNonPaye->setEtat(1);
+        $panierNonPaye->setDate(new \DateTime());
+        $panierRepository->save($panierNonPaye, true);
+
+        $this->addFlash('success', $translator->trans('panier.panierPaye'));
+        return $this->redirectToRoute('app_produit_index');
     }
 }

@@ -18,20 +18,24 @@ class RegistrationFormType extends AbstractType
     {
         $builder
             ->add('email')
-            ->add('nom')
-            ->add('prenom')
+            ->add('nom', null, [
+                'label' => 'utilisateur.nom',
+            ])
+            ->add('prenom', null, [
+                'label' => 'utilisateur.prenom',
+            ])
             ->add('plainPassword', PasswordType::class, [
                 // instead of being set onto the object directly,
                 // this is read and encoded in the controller
+                'label' => 'utilisateur.mot_de_passe',
                 'mapped' => false,
                 'attr' => ['autocomplete' => 'new-password'],
                 'constraints' => [
                     new NotBlank([
-                        'message' => 'Please enter a password',
+                        'message' => 'utilisateur.erreur.mot_de_passe',
                     ]),
                     new Length([
                         'min' => 6,
-                        'minMessage' => 'Your password should be at least {{ limit }} characters',
                         // max length allowed by Symfony for security reasons
                         'max' => 4096,
                     ]),

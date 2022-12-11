@@ -4,16 +4,18 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\UserType;
+use App\Repository\PanierRepository;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('{_locale}')]
 class UserController extends AbstractController
 {
-    #[Route('/user', name: 'app_user_index', methods: ['GET'])]
+    #[Route('/compte', name: 'app_user_index', methods: ['GET'])]
     public function index(UserRepository $userRepository): Response
     {
         return $this->render('user/index.html.twig', [
@@ -40,16 +42,8 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('user/{id}', name: 'app_user_show', methods: ['GET'])]
-    public function show(User $user): Response
-    {
-        return $this->render('user/show.html.twig', [
-            'user' => $user,
-        ]);
-    }
-
-    #[Route('user/modifier/{id}', name: 'app_user_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, User $user, UserRepository $userRepository): Response
+    #[Route('/compte/{id}', name: 'app_user_show', methods: ['GET', 'POST'])]
+    public function show(Request $request, User $user, UserRepository $userRepository, PanierRepository $panierRepository): Response
     {
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
@@ -57,6 +51,27 @@ class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $userRepository->save($user, true);
 
+            return $this->redirectToRoute('app_user_show', ['id'=> $user->getId()], Response::HTTP_SEE_OTHER);
+        }
+
+        $paniers = $panierRepository->findBy(['utilisateur' => $user->getId(), 'etat' => 1]);
+
+        return $this->render('user/show.html.twig', [
+            'paniers' => $paniers,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/compte/modifier/{id}', name: 'app_user_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, User $user, UserRepository $userRepository, TranslatorInterface $translator): Response
+    {
+        $form = $this->createForm(UserType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $userRepository->save($user, true);
+
+            $this->addFlash('success', $translator->trans('utilisateur.compteModifie'));
             return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -66,7 +81,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('user/delete/{id}', name: 'app_user_delete', methods: ['POST'])]
+    #[Route('/compte/delete/{id}', name: 'app_user_delete', methods: ['POST'])]
     public function delete(Request $request, User $user, UserRepository $userRepository): Response
     {
         if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
@@ -74,5 +89,19 @@ class UserController extends AbstractController
         }
 
         return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    // Accès à la page admin
+    #[Route('/backoffice', name: 'app_user_backoffice', methods: ['GET'])]
+    public function backoffice(UserRepository $userRepository, PanierRepository $panierRepository): Response
+    {
+        $paniersNonPayes = $panierRepository->findBy(['etat' => 0]);
+
+        $users = $userRepository->findAllUsersByCroissantOrder();
+
+        return $this->render('user/backoffice.html.twig', [
+            'users' => $users,
+            'paniers' => $paniersNonPayes,
+        ]);
     }
 }

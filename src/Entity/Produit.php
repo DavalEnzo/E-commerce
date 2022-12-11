@@ -7,7 +7,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
+#[ORM\HasLifecycleCallbacks]
+#[UniqueEntity(fields: ['nom'], message: 'produit.nom.utilise')]
 #[ORM\Entity(repositoryClass: ProduitRepository::class)]
 class Produit
 {
@@ -17,12 +21,23 @@ class Produit
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        min: 2,
+        max: 255,
+    )]
     private ?string $nom = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank]
+    #[Assert\Positive]
+    #[Assert\Range(
+        min: 0,
+        max: 1000000,
+    )]
     private ?int $stock = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -120,6 +135,14 @@ class Produit
         }
 
         return $this;
+    }
+
+    #[ORM\PostRemove]
+    public function removeImage()
+    {
+        if ($this->photo) {
+            unlink(__DIR__ . '/../../public/images/' . $this->photo);
+        }
     }
 
     public function getPrix(): ?float

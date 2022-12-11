@@ -1,0 +1,78 @@
+produit:
+  nom: 'Name'
+  prix: 'Price'
+  produit: 'Product'
+  plural: 'Products'
+  voirPlus: 'See more'
+  pasDeProduit: 'No product for the moment'
+  ajouterProduit: 'Add a product'
+  ficheProduit: 'Product sheet'
+  enStock: 'In stock'
+  panierActuellement: 'You currently have %contenuPanier.quantite% copy/copies of this product in your cart'
+  ajouterAuPanier: 'Add to cart'
+  modification: 'Product modification'
+  editionProduit: 'Product edition'
+  creationProduit: 'Product creation'
+  nouveauProduit: 'New product'
+  produitInexistant: 'Product does not exist'
+  quantiteModifiee: 'Quantity modified'
+  produitAjoute: 'Product added successfully'
+  produitModifie: 'Product modified successfully'
+  produitSupprime: 'Product deleted successfully'
+
+
+utilisateur:
+  mot_de_passe: 'Password'
+  nom: 'Name'
+  prenom: 'First name'
+  inscription: 'Sign up'
+  connexion: 'Sign in'
+  connexion.sousTitre: 'Please sign in'
+  deconnexion: 'Sign out'
+  compteModifie: 'Account modified successfully'
+
+panier:
+  listePanier: 'List of products in your cart'
+  panierVide: 'Your cart is empty'
+  dateCommande: 'This order was placed on'
+  dateAjoutee: 'Added to cart on'
+  votrePanier: 'Your cart'
+  quantite: 'Quantity'
+  supprimerProduit: 'Delete this product'
+  payer: 'Pay'
+  prixTotalPanier: 'Total price of the cart'
+  prixUnite: 'Unit price'
+  prixPour: 'Price for'
+  panierInexistant: 'Cart not found'
+  produitAjoute: 'Product added to cart'
+  produitInexistant: 'Item not found in your cart'
+  panierNonAppartient: 'You cannot delete a product that does not belong to you'
+  articleSupprime: 'Item deleted from cart!'
+  panierDoitCree: 'A cart must be created before you can add a product'
+  panierSupprime: 'Cart deleted!'
+  panierPaye: 'The cart has been paid, you can see your orders in your profile'
+
+compte:
+  monCompte: 'My account'
+  historiqueCommande: 'Order history'
+  commande: 'Order'
+  dateCommande: 'Order placed on'
+  voirCommande: 'See the order'
+
+panelAdmin:
+  panelAdmin: 'Admin panel'
+  listePanier: 'List of carts not bought'
+  panierProprietaire: 'Cart belonging to'
+  listeUtilisateurs: 'List of users'
+  adresseMail: 'Email address'
+  roles: 'Roles'
+  administration: 'Administration'
+  aucuneCommande: 'No order recorded'
+
+deconnecte: 'You have been disconnected'
+
+form:
+  modifier: 'Modify'
+  supprimer: 'Delete'
+  sauvegarder: 'Save'
+
